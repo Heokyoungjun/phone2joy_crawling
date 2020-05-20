@@ -19,6 +19,14 @@ errorFile = "ErrorMsg.txt"
 # 다운로드완료 상품 목록 리스트파일
 itemsList = "ItemsList.txt"
 
+# 다룬로드체크파일 작성
+def downloadFileWrite(itemName):
+
+    # 파일에 추가
+    file = open(itemsList, 'a')
+    file.write(itemName+"\n")
+    file.close()
+
 # 다운로드 유무 확인
 def downloadCheck(itemName):
 
@@ -348,9 +356,10 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
                                 with open(saveDir + "/" + alt + "-detail-" + imgFileName2,'wb') as h: # w - write b - binary
                                     imgFile = f.read()
                                     h.write(imgFile)
-                        except:
+                        except Exception as e:
                             makeErrorTxt("문제 페이지 = " + data1 + " , " + data2 + " , " + data3 + " , " + str(pageidx) + "페이지" + " , 상품명 : " + alt)
                             makeErrorTxt("ERROR not Found : " + url3)
+                            makeErrorTxt(e)
 
                         # 상세 내용 이미지 주소tmp
                         img2Tmp = img2Tmp + alt + "-detail-" + imgFileName2 + ":"
@@ -372,6 +381,9 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
                 makeCsv(saveDir  + "/" + data2 + ".csv", csvData)
             elif data3 == " " and data2 == " " and data1 != " ":
                 makeCsv(saveDir  + "/" + data1 + ".csv", csvData)
+
+            # 다운로드완료한 상품명 작성
+            downloadFileWrite(alt)
 
 # 데이터 크롤링 메소드
 def urlcwraling():
