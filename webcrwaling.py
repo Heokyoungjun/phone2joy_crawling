@@ -189,8 +189,6 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
             if resultFlag:
                 continue
 
-            print(alt)
-
             # CSVdata초기화
             csvData = []
 
