@@ -17,38 +17,41 @@ csvData = []
 # 에러메세지파일
 errorFile = "ErrorMsg.txt"
 # 다운로드완료 상품 목록 리스트파일
-itemsList = "ItemsList.txt"
+itemsList = "ImageDownLoadItemsList.txt"
 
 # 다룬로드체크파일 작성
 def downloadFileWrite(itemName):
 
+    if os.path.isfile(itemsList):
+        # 파일에 추가
+        file = open(itemsList, 'a')
+    else:
+        # 파일 작성
+        file = open(itemsList, 'w')
+
     # 파일에 추가
-    file = open(itemsList, 'a')
     file.write(itemName+"\n")
     file.close()
 
-# 다운로드 유무 확인
-def downloadCheck(itemName):
+# 다운로드 유무 확인(다운로드O:False, 다운로드X:True)
+def downloadCheck(url, itemName):
 
-    file = ""
-    rstFlag = False
+    rstFlag = True
 
-    if os.path.isfile(itemsList):
-        # 파일에 추가
-        file = open(itemsList, 'r')
+    if os.path.isfile(url):
+       pass
     else:
+        # 파일 작성
         file = open(itemsList, 'w')
-        file.write("상품명" + "\n")
+        file.write("")
         file.close()
-        file = open(itemsList, 'r')
+        return rstFlag
+
+    file = open(url, 'r')
 
     readItems = file.read()
     if 0 < readItems.find(itemName):
-        rstFlag = True
-    else:
-        file.close()
-        file = open(itemsList, 'a')
-        file.write(itemName+"\n")
+        rstFlag = False
 
     file.close()
 
@@ -162,11 +165,21 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
     # 헤더 데이타 쓰기
     csvData = ["대분류","중분류","소분류","상품명","판매가","소비자가","기종","색상","디자인","섬네일","상세이미지","링크"]
     if data3 != " ":
-        makeCsv(saveDir + "/" + data3 + ".csv", csvData)
+        if os.path.isfile(saveDir + "/" + data3 + ".csv"):
+            pass
+        else:
+            makeCsv(saveDir + "/" + data3 + ".csv", csvData)
+
     elif data3 == " " and data2 != " ":
-        makeCsv(saveDir  + "/" + data2 + ".csv", csvData)
+        if os.path.isfile(saveDir  + "/" + data2 + ".csv"):
+            pass
+        else:
+            makeCsv(saveDir  + "/" + data2 + ".csv", csvData)
     elif data3 == " " and data2 == " " and data1 != " ":
-        makeCsv(saveDir  + "/" + data1 + ".csv", csvData)
+        if os.path.isfile(saveDir  + "/" + data1 + ".csv"):
+            pass
+        else:
+            makeCsv(saveDir  + "/" + data1 + ".csv", csvData)
 
     # 마지막 페이지가 없을 경우
     if lastPageCnt == "#none":
@@ -193,9 +206,16 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
             tagImg = i.find_all('img')[5]
             alt = tagImg['alt']
 
-            resultFlag = downloadCheck(alt)
-            if resultFlag:
-                continue
+            # 각CSV파일 다운로드 체크
+            eachOtherFileFlag = False
+            if data3 != " ":
+                eachOtherFileFlag = downloadCheck(saveDir + "/" + data3 + ".csv", alt)
+            elif data3 == " " and data2 != " ":
+                eachOtherFileFlag = downloadCheck(saveDir + "/" + data2 + ".csv", alt)
+            elif data3 == " " and data2 == " " and data1 != " ":
+                eachOtherFileFlag = downloadCheck(saveDir + "/" + data1 + ".csv", alt)
+
+            imgFileDownLoadFlag = downloadCheck(itemsList, alt)
 
             # CSVdata초기화
             csvData = []
@@ -206,11 +226,9 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
             csvData.append(data2)
             # 소분류 임시저장
             csvData.append(data3)
-
             # 상품명
             csvData.append(alt)
 
-            # src = tagImg['src']
             # 한글url 치환
             url1 = quote_plus(baseUrl + link)
             url1 = url1.replace("%2F","/")
@@ -305,22 +323,23 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
             url2 = url2.replace("%3A", ":")
             url2 = url2.replace("+", "%20")
 
-            try:
-                # 상세 메인이미지 다운로드 및 썸네일
-                with urlopen(url2) as f:
-                    with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
-                        imgFile = f.read()
-                        h.write(imgFile)
-            except ValueError:
-                url2 = "https:" + url2
-                # 상세 메인이미지 다운로드 및 썸네일
-                with urlopen(url2) as f:
-                    with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
-                        img = f.read()
-                        h.write(img)
-            except Exception as e:
-                makeErrorTxt("에러 상품 : " + alt)
-                makeErrorTxt("알수 없는 에러 발생: " + e)
+            # 다운로드 유무 체크
+            if imgFileDownLoadFlag:
+                try:
+                    # 상세 메인이미지 다운로드 및 썸네일
+                    with urlopen(url2) as f:
+                        with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
+                            imgFile = f.read()
+                            h.write(imgFile)
+                except ValueError:
+                    url2 = "https:" + url2
+                    # 상세 메인이미지 다운로드 및 썸네일
+                    with urlopen(url2) as f:
+                        with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
+                            img = f.read()
+                            h.write(img)
+                except Exception as e:
+                    makeErrorTxt("에러 상품 : " + alt)
 
             # 상세 내용 이미지 주소
             img2 = soup2.select('.cont')
@@ -350,16 +369,17 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
                         url3 = url3.replace("+", "%20")
                         url3 = "https://phone2joy.com" + imgSrc + "/" + url3
 
-                        try:
-                        # 상세 메인이미지 다운로드 및 썸네일
-                            with urlopen(url3) as f:
-                                with open(saveDir + "/" + alt + "-detail-" + imgFileName2,'wb') as h: # w - write b - binary
-                                    imgFile = f.read()
-                                    h.write(imgFile)
-                        except Exception as e:
-                            makeErrorTxt("문제 페이지 = " + data1 + " , " + data2 + " , " + data3 + " , " + str(pageidx) + "페이지" + " , 상품명 : " + alt)
-                            makeErrorTxt("ERROR not Found : " + url3)
-                            makeErrorTxt(e)
+                        # 다운로드 유무 체크
+                        if imgFileDownLoadFlag:
+                            try:
+                            # 상세 메인이미지 다운로드 및 썸네일
+                                with urlopen(url3) as f:
+                                    with open(saveDir + "/" + alt + "-detail-" + imgFileName2,'wb') as h: # w - write b - binary
+                                        imgFile = f.read()
+                                        h.write(imgFile)
+                            except Exception as e:
+                                makeErrorTxt("문제 페이지 = " + data1 + " , " + data2 + " , " + data3 + " , " + str(pageidx) + "페이지" + " , 상품명 : " + alt)
+                                makeErrorTxt("ERROR not Found : " + url3)
 
                         # 상세 내용 이미지 주소tmp
                         img2Tmp = img2Tmp + alt + "-detail-" + imgFileName2 + ":"
@@ -374,16 +394,19 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
             # 해당링크
             csvData.append(baseUrl + link)
 
-            # csv 파일 쓰기
-            if data3 != " ":
-                makeCsv(saveDir + "/" + data3 + ".csv", csvData)
-            elif data3 == " " and data2 != " ":
-                makeCsv(saveDir  + "/" + data2 + ".csv", csvData)
-            elif data3 == " " and data2 == " " and data1 != " ":
-                makeCsv(saveDir  + "/" + data1 + ".csv", csvData)
+            # 다운로드 유무 체크
+            if eachOtherFileFlag:
+                # csv 파일 쓰기
+                if data3 != " ":
+                    makeCsv(saveDir + "/" + data3 + ".csv", csvData)
+                elif data3 == " " and data2 != " ":
+                    makeCsv(saveDir  + "/" + data2 + ".csv", csvData)
+                elif data3 == " " and data2 == " " and data1 != " ":
+                    makeCsv(saveDir  + "/" + data1 + ".csv", csvData)
 
-            # 다운로드완료한 상품명 작성
-            downloadFileWrite(alt)
+            if imgFileDownLoadFlag:
+                # 다운로드완료한 상품명 작성
+                downloadFileWrite(alt)
 
 # 데이터 크롤링 메소드
 def urlcwraling():
