@@ -224,7 +224,7 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
                 eachOtherFileFlag = downloadCheck(saveDir + "/" + data1 + ".csv", alt)
 
             imgFileDownLoadFlag = downloadCheck(itemsList, alt)
-            # print("상품명 : " + alt + " , eachOtherFileFlag : " + str(eachOtherFileFlag) + " , imgFileDownLoadFlag : ", imgFileDownLoadFlag)
+            print("상품명 : " + alt + " , eachOtherFileFlag : " + str(eachOtherFileFlag) + " , imgFileDownLoadFlag : ", imgFileDownLoadFlag)
 
             # CSVdata초기화
             csvData = []
@@ -340,12 +340,16 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
                         with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
                             imgFile = f.read()
                             h.write(imgFile)
-                except ValueError:
-                    # 상세 메인이미지 다운로드 및 썸네일
-                    with urlopen(url2) as f:
-                        with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
-                            img = f.read()
-                            h.write(img)
+                except ValueError:쓸
+                    try:
+                        # 상세 메인이미지 다운로드 및 썸네일
+                        with urlopen(url2) as f:
+                            with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
+                                img = f.read()
+                                h.write(img)
+                    except:
+                        pass
+                    
                 except Exception as e:
                     makeErrorTxt("에러 상품 : " + alt)
 
