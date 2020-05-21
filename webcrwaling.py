@@ -212,7 +212,7 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
             link = i.find('a')['href']
             tagImg = i.find_all('img')[5]
             alt = tagImg['alt']
-            alt = alt.replace("/", " ")
+
 
             # 각CSV파일 다운로드 체크
             eachOtherFileFlag = False
