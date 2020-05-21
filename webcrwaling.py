@@ -6,19 +6,19 @@ from urllib.parse import quote_plus
 # 웹사이트 설정
 baseUrl = 'https://phone2joy.com'
 
-# # 대구분
-# item1 = ["Z플립 케이스", "젤리 케이스", "미러 케이스", "하드 케이스","데코덴 케이스", "주변기"]
-# # 중구분
-# item2 = ["", ["투명클리어 젤리", "컬러소프트 젤리", "네온샌드 젤리"], "프리미엄", ["3D하드 케이스","카드도어범퍼","스마트톡+3D하드","3D하드+테슬"],"", ["스마트 스냅톡", "에어팟1세대&2세대", "에어팟 프로 케이스", "버즈케이스(소프트)","버즈케이스(하드)","보조악세서리"]]
-# # 소구분
-# item3 = ["", ["P2J", "라이선스 캐릭터", "테슬"], "","","",""]
-
 # 대구분
-item1 = ["주변기기"]
+item1 = ["Z플립 케이스", "젤리 케이스", "미러 케이스", "하드 케이스","데코덴 케이스", "주변기기"]
 # 중구분
-item2 = ["보조악세서리"]
+item2 = ["", ["투명클리어 젤리", "컬러소프트 젤리", "네온샌드 젤리"], "프리미엄", ["3D하드 케이스","카드도어범퍼","스마트톡+3D하드","3D하드+테슬"],"", ["스마트 스냅톡", "에어팟1세대&2세대", "에어팟 프로 케이스", "버즈케이스(소프트)","버즈케이스(하드)","보조악세서리"]]
 # 소구분
-item3 = [""]
+item3 = ["", ["P2J", "라이선스 캐릭터", "테슬"], "","","",""]
+
+# # 대구분
+# item1 = ["주변기기"]
+# # 중구분
+# item2 = ["보조악세서리"]
+# # 소구분
+# item3 = [""]
 # 출력데이타
 csvData = []
 # 에러메세지파일
@@ -226,6 +226,12 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
             imgFileDownLoadFlag = downloadCheck(itemsList, alt)
             print("상품명 : " + alt + " , eachOtherFileFlag : " + str(eachOtherFileFlag) + " , imgFileDownLoadFlag : ", imgFileDownLoadFlag)
 
+            # if not eachOtherFileFlag and  not imgFileDownLoadFlag:
+            #     print("false")
+            #     pass
+                
+            # print("OK")
+                
             # CSVdata초기화
             csvData = []
 
@@ -342,6 +348,7 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
                             h.write(imgFile)
                 except ValueError:
                     try:
+                        print("url2 : " + url2)
                         # 상세 메인이미지 다운로드 및 썸네일
                         with urlopen(url2) as f:
                             with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
