@@ -7,11 +7,11 @@ from urllib.parse import quote_plus
 baseUrl = 'https://phone2joy.com'
 
 # 대구분
-item1 = ["GALAXY", "APPLE", "Z플립 케이스"]
+item1 = ["Z플립 케이스", "젤리 케이스", "미러 케이스", "하드 케이스","데코덴 케이스", "주변기"]
 # 중구분
-item2 = [["노트시리즈", "S시리즈", "A시리즈", "J시리즈-ETC"], "아이폰", ""]
+item2 = ["", ["투명클리어 젤리", "컬러소프트 젤리", "네온샌드 젤리"], "프리미엄", ["3D하드 케이스","카드도어범퍼","스마트톡+3D하드","3D하드+테슬"],"", ["스마트 스냅톡", "에어팟1세대&2세대", "에어팟 프로 케이스", "버즈케이스(소프트)","버즈케이스(하드)","보조악세서리"]]
 # 소구분
-item3 = [["갤럭시노트", "갤럭시S", "갤럭시A", "갤럭시"], "", ""]
+item3 = ["", ["P2J", "라이선스 캐릭터", "테슬"], "","","",""]
 # 출력데이타
 csvData = []
 # 에러메세지파일
@@ -50,7 +50,7 @@ def downloadCheck(url, itemName):
     file = open(url, 'r')
 
     readItems = file.read()
-    if 0 < readItems.find(itemName):
+    if 0 <= readItems.find(itemName):
         rstFlag = False
 
     file.close()
