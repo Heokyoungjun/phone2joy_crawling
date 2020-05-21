@@ -348,7 +348,7 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
                                 img = f.read()
                                 h.write(img)
                     except:
-                        pass
+                        makeErrorTxt("에러 상품 : " + alt)
                     
                 except Exception as e:
                     makeErrorTxt("에러 상품 : " + alt)
