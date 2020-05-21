@@ -340,7 +340,7 @@ def getUrl3(inputData, saveDir, data1, data2, data3):
                         with open(saveDir + "/" + alt + "-main-" + imgFileName,'wb') as h: # w - write b - binary
                             imgFile = f.read()
                             h.write(imgFile)
-                except ValueError:쓸
+                except ValueError:
                     try:
                         # 상세 메인이미지 다운로드 및 썸네일
                         with urlopen(url2) as f:
